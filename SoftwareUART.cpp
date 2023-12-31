@@ -1,6 +1,6 @@
 /*
 
-SoftwareSerial.cpp - Implementation of the Arduino software serial for ESP32.
+SoftwareUART.cpp - Implementation of the Arduino software serial for ESP32.
 Copyright (c) 2015-2016 Peter Lerup. All rights reserved.
 
 This library is free software; you can redistribute it and/or
@@ -27,13 +27,13 @@ extern "C" {
 #include "esp32-hal-gpio.h"
 }
 
-#include <SoftwareSerial.h>
+#include <SoftwareUART.h>
 
 #define MAX_PIN 35
 
 // As the Arduino attachInterrupt has no parameter, lists of objects
 // and callbacks corresponding to each possible GPIO pins have to be defined
-SoftwareSerial *ObjList[MAX_PIN + 1];
+SoftwareUART *ObjList[MAX_PIN + 1];
 
 void IRAM_ATTR sws_isr_0() { ObjList[0]->rxRead(); };
 void IRAM_ATTR sws_isr_2() { ObjList[2]->rxRead(); };
@@ -96,7 +96,7 @@ static void (*ISRList[MAX_PIN + 1])() = {
     sws_isr_34,
     sws_isr_35};
 
-bool SoftwareSerial::isValidGPIOpin(uint8_t pin)
+bool SoftwareUART::isValidGPIOpin(uint8_t pin)
 {
   if (pin < MAX_PIN)
   {
@@ -105,7 +105,7 @@ bool SoftwareSerial::isValidGPIOpin(uint8_t pin)
   return false;
 }
 
-SoftwareSerial::SoftwareSerial(int receivePin, int transmitPin, bool inverse_logic, unsigned int buffSize)
+SoftwareUART::SoftwareUART(int receivePin, int transmitPin, bool inverse_logic, unsigned int buffSize)
 {
   m_invert = inverse_logic;
   m_rxValid = m_txValid = m_txEnabled = m_rxEnabled = false;
@@ -134,7 +134,7 @@ SoftwareSerial::SoftwareSerial(int receivePin, int transmitPin, bool inverse_log
   }
 }
 
-SoftwareSerial::~SoftwareSerial()
+SoftwareUART::~SoftwareUART()
 {
   enableRx(false);
   if (m_rxValid)
@@ -143,19 +143,19 @@ SoftwareSerial::~SoftwareSerial()
     free(m_buffer);
 }
 
-void SoftwareSerial::begin(uint32_t speed)
+void SoftwareUART::begin(uint32_t speed)
 {
   // Use getCycleCount() loop to get as exact timing as possible
   m_bitTime = ESP.getCpuFreqMHz() * 1000000 / speed;
   enableRx(true);
 }
 
-long SoftwareSerial::baudRate()
+long SoftwareUART::baudRate()
 {
   return ESP.getCpuFreqMHz() * 1000000 / m_bitTime;
 }
 
-void SoftwareSerial::setTransmitEnablePin(int transmitEnablePin)
+void SoftwareUART::setTransmitEnablePin(int transmitEnablePin)
 {
   if (isValidGPIOpin(transmitEnablePin))
   {
@@ -170,7 +170,7 @@ void SoftwareSerial::setTransmitEnablePin(int transmitEnablePin)
   }
 }
 
-void SoftwareSerial::enableRx(bool on)
+void SoftwareUART::enableRx(bool on)
 {
   if (m_rxValid && m_rxEnabled != on)
   {
@@ -186,7 +186,7 @@ void SoftwareSerial::enableRx(bool on)
   }
 }
 
-int SoftwareSerial::read()
+int SoftwareUART::read()
 {
   if (!m_rxValid || (m_inPos == m_outPos))
     return -1;
@@ -195,7 +195,7 @@ int SoftwareSerial::read()
   return ch;
 }
 
-int SoftwareSerial::available()
+int SoftwareUART::available()
 {
   if (m_rxValid)
   {
@@ -208,7 +208,7 @@ int SoftwareSerial::available()
 #define WaitBitTime(wait) \
  for (uint32_t start = ESP.getCycleCount(); ESP.getCycleCount() - start < wait; )
 
-size_t SoftwareSerial::write(uint8_t b)
+size_t SoftwareUART::write(uint8_t b)
 {
   if (!m_txValid)
     return 0;
@@ -241,7 +241,7 @@ size_t SoftwareSerial::write(uint8_t b)
   return 1;
 }
 
-void IRAM_ATTR SoftwareSerial::rxRead()
+void IRAM_ATTR SoftwareUART::rxRead()
 {
   // Advance the starting point for the samples but compensate for the
   // initial delay which occurs before the interrupt is delivered
@@ -296,18 +296,18 @@ void IRAM_ATTR SoftwareSerial::rxRead()
   // GPIO_REG_WRITE(GPIO.status_w1tc, 1 << m_rxPin);
 }
 
-void SoftwareSerial::flush()
+void SoftwareUART::flush()
 {
   m_inPos = m_outPos = 0;
   m_overflow = false;
 }
 
-bool SoftwareSerial::overflow()
+bool SoftwareUART::overflow()
 {
   return m_overflow;
 }
 
-int SoftwareSerial::peek()
+int SoftwareUART::peek()
 {
   if (!m_rxValid || (m_inPos == m_outPos))
   {

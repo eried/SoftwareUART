@@ -1,7 +1,7 @@
 #include <Arduino.h>
-#include <SoftwareSerial.h>
+#include <SoftwareUART.h>
 
-SoftwareSerial TempSerial(21, 22);
+SoftwareUART TempSerial(21, 22);
 
 void setup() 
 {

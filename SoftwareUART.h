@@ -1,7 +1,7 @@
 /*
-SoftwareSerial.h
+SoftwareUART.h
 
-SoftwareSerial.cpp - Implementation of the Arduino software serial for ESP8266.
+SoftwareUART.cpp - Implementation of the Arduino software serial for ESP8266.
 Copyright (c) 2015-2016 Peter Lerup. All rights reserved.
 
 This library is free software; you can redistribute it and/or
@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 */
 
-#ifndef SoftwareSerial_h
-#define SoftwareSerial_h
+#ifndef SoftwareUART_h
+#define SoftwareUART_h
 
 #include <inttypes.h>
 #include <Stream.h>
@@ -32,11 +32,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // the constructor however has an optional rx buffer size.
 // Speed up to 115200 can be used.
 
-class SoftwareSerial : public Stream
+class SoftwareUART : public Stream
 {
   public:
-    SoftwareSerial(int receivePin, int transmitPin, bool inverse_logic = false, unsigned int buffSize = 64);
-    ~SoftwareSerial();
+    SoftwareUART(int receivePin, int transmitPin, bool inverse_logic = false, unsigned int buffSize = 64);
+    ~SoftwareUART();
 
     void begin(uint32_t speed);
     long baudRate();
